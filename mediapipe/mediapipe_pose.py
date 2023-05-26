@@ -10,9 +10,6 @@ from mediapipe.tasks.python import vision
 from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 
-# Change path to the video to analyse
-cap_path = 'Enregistrements\\Videos_20230522_155825\\20230522_155825_Kinect_7.mkv'
-
 # Modele parameters and detector object init
 base_options = python.BaseOptions(model_asset_path='modeles\\mediapipe\\pose_landmarker_lite.task')
 options = vision.PoseLandmarkerOptions(
@@ -64,6 +61,3 @@ def Show_pose(file_path : str):
     cap.release()
     cv2.destroyAllWindows()
     return
-
-# Script
-Show_pose(cap_path)
