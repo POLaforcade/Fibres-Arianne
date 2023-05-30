@@ -6,9 +6,9 @@ from mediapipe.tasks.python import vision
 
 MARGIN = 10  # pixels
 ROW_SIZE = 10  # pixels
-FONT_SIZE = 1
+FONT_SIZE = 3
 FONT_THICKNESS = 1
-TEXT_COLOR = (255, 0, 0)  # red
+TEXT_COLOR = (255, 0, 0)  # blue
 
 
 def visualize(image, detection_result) -> np.ndarray:
