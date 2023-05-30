@@ -41,7 +41,7 @@ def draw_landmarks_on_image(rgb_image, detection_result):
       solutions.drawing_styles.get_default_pose_landmarks_style())
   return annotated_image
 
-def Show_pose(file_path : str):
+def Show_pose_person(file_path : str):
     """
     Shows a video with pose detection and landmarks
         Args : 

@@ -39,7 +39,7 @@ def visualize(image, detection_result) -> np.ndarray:
 
   return image
 
-def detect_object(file_path : str):
+def Show_object(file_path : str):
     """Show a video with bounding boxes around detected person
     Args :
         file_path : path to the RGB video that msut be computed
@@ -76,3 +76,8 @@ def detect_object(file_path : str):
 
     cap.release()
     cv2.destroyAllWindows()
+
+def Show_pose(file_path : str):
+    # Open capture
+    cap = cv2.VideoCapture(file_path)
+    # Travailler ici pour detecter la position dans chaque box
