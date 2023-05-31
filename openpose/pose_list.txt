@@ -1,0 +1,24 @@
+***************************** Liste des positions prévues **********************************
+VISAGE
+De face, de dos, de profil droite ou gauche
+
+BRAS 
+0°, 45°, 90°, -45° et -90°
+
+JAMBES
+Debout, écartées, pliées 
+
+HANCHES
+De face, de dos, de profil droite ou gauche
+
+EPAULES
+De face, de dos, de profil droite ou gauche
+
+TETE
+De face, de profil, en l'air, au sol, vers l'interaction
+
+COUDES
+Le long du corps, décolés
+
+******************************************************************************************
+Les positions relatives sont prises par rapport à la place du cou
