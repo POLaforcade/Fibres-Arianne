@@ -6,7 +6,7 @@ BRAS
 0°, 45°, 90°, -45° et -90°
 
 JAMBES
-Debout, écartées, pliées 
+Debout, écartées, pliées
 
 HANCHES
 De face, de dos, de profil droite ou gauche
@@ -16,9 +16,17 @@ De face, de dos, de profil droite ou gauche
 
 TETE
 De face, de profil, en l'air, au sol, vers l'interaction
+Detecteur de chutes
 
 COUDES
 Le long du corps, décolés
 
 ******************************************************************************************
 Les positions relatives sont prises par rapport à la place du cou
+
+Informations importantes :
+- Orientation
+- Quantité de mouvement relative par rapport au point middle hip
+
+Des programmes pour des coachs de yoga automatiques ont été développés.
+On peut s'en inspirer pour avoir la variété des positions
