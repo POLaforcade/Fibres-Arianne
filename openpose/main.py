@@ -33,9 +33,11 @@ while cap.isOpened():
 
         poseKeypoints = datum.poseKeypoints
 
-    if poseKeypoints.size > 1:
-        mains = list_mouvement.detect_pose_main(poseKeypoints)
-        cv2.putText(datum.cvOutputData, mains)
+        if poseKeypoints.size > 1:
+            for keypoints in poseKeypoints:
+                neck_x, neck_y = keypoints[1,:2]
+                mains = list_mouvement.detect_pose_main(keypoints)
+                cv2.putText(datum.cvOutputData, mains, keypoints[1,:2], cv2.FONT_HERSHEY_COMPLEX, 2, (0, 0, 255))
 
     if use_open_pose:
         cv2.imshow("OpenPose test", datum.cvOutputData)
