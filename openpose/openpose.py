@@ -2,7 +2,7 @@ import numpy as np
 from time import sleep
 import sys,os
 
-sys.path.append('F:/openpose/build/python/openpose/Release');
+sys.path.append('F:/openpose/build/python/openpose/Release')
 os.environ['PATH']  = os.environ['PATH'] + ';' + 'F:/openpose/build/x64/Release;' +  'F:/openpose/build/bin;'
 import pyopenpose as op
 import cv2
@@ -10,7 +10,7 @@ import cv2
 use_open_pose = True
 fps_wait = 40
 
-if use_open_pose:
+if use_open_pose:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
     opWrapper = op.WrapperPython()
     opWrapper.configure(dict(model_folder="F:/openpose/models/"))
     opWrapper.start()
