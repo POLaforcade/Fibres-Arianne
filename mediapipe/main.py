@@ -3,3 +3,4 @@ import object_detector
 
 cap_path = 'Enregistrements\\Videos_20230522_155825\\20230522_155825_Kinect_7.mkv'
 
+object_detector.Show_pose(cap_path)
