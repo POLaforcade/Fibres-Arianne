@@ -8,6 +8,8 @@ while cap.isOpened():
     if not ret:
         break
 
+    cv2.putText(frame, "feur", (200, 200), cv2.FONT_HERSHEY_COMPLEX, 25, (0, 0, 255))
+
     cv2.imshow('Video', frame)
 
     if cv2.waitKey(16) & 0xFF == ord('q'): # Lis la video à 60 fps
