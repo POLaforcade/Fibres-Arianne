@@ -15,3 +15,4 @@ def detect_pose_main(poseKeypoints):
             return "2 mains en l'air"
         else:
             return "0 mains en l'air"
+    
