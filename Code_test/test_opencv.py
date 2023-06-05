@@ -8,7 +8,7 @@ while cap.isOpened():
     if not ret:
         break
 
-    cv2.putText(frame, "feur", (200, 200), cv2.FONT_HERSHEY_COMPLEX, 25, (0, 0, 255))
+    cv2.putText(frame, "Hello world", (200, 200), cv2.FONT_HERSHEY_COMPLEX, 25, (0, 0, 255))
 
     cv2.imshow('Video', frame)
 
