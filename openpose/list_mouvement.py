@@ -14,3 +14,11 @@ def detect_pose_main(keypoints):
         return "Une main en l'air"
     else:
         return "0 mains en l'air"
+    
+def detect_pose_pied(keypoints):
+    if(): # Detection en comparant les positions des genoux et des pieds
+        return "Jambes écartées"
+    elif() :
+        return "Jambes croisées"
+    else :
+        return "Jabmes droites"
