@@ -24,7 +24,7 @@ if use_open_pose:
     datum = op.Datum()
     fps_wait = 10
 
-cap = cv2.VideoCapture("Enregistrements\\Videos_20230602_120309\\20230602_120309_Kinect_7.mkv")
+cap = cv2.VideoCapture("Enregistrements\\Videos_20230602_115702\\20230602_115702_Kinect_8.mkv")
 
 if not cap.isOpened():
     print("Erreur ouverture fichier video")
@@ -51,13 +51,12 @@ while cap.isOpened():
                 rhand_x, rhand_y    = keypoints[4,:2]
                 rhand_x, rhand_y    = int(rhand_x), int(rhand_y)
 
-                mains = list_mouvement.detect_pose_main(keypoints)
+                pose = list_mouvement.detect_pose_zone(keypoints)
 
                 cv2.circle(frame, (neck_x, neck_y), 3, (0, 0, 255))
                 cv2.circle(frame, (relbow_x, relbow_y), 3, (0, 0, 255))
                 cv2.circle(frame, (rhand_x,rhand_y), 3, (0, 0, 255))
-                cv2.putText(frame,  mains, (neck_x, neck_y), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
-                cv2.putText(datum.cvOutputData, mains, (neck_x, neck_y), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
+                cv2.putText(frame,  pose, (neck_x, neck_y), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
 
     if use_open_pose:
         cv2.imshow("output data", frame)
