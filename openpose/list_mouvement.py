@@ -60,8 +60,8 @@ def detect_pose_main(keypoints) -> str:
     lshoulder_x, lshoulder_y    = keypoints[5,:2]
     lelbow_x, lelbow_y          = keypoints[6,:2]
     lhand_x,lhand_y             = keypoints[7,:2]
-    rthreshold                   = (35, 145)
-    lthreshold                   = (235, 325)
+    rthreshold                   = (235, 325)
+    lthreshold                   = (35, 145)
     if(check_angle_threshold((rshoulder_x, rshoulder_y), (relbow_x, relbow_y), (rhand_x,rhand_y), rthreshold) and \
        check_angle_threshold((lshoulder_x, lshoulder_y), (lelbow_x, lelbow_y), (lhand_x,lhand_y), lthreshold)):
         return "2 mains en l'air"
@@ -90,6 +90,26 @@ def detect_pose_pied(keypoints) -> str:
         return "Jambes ecartees"
     else :
         return "Jabmes droites"
+    
+def detect_pose_epaule(keypoints) -> str :
+    """
+    Returns the position of the shoulders for a person
+        Args : 
+            keypoints : OpenPose data received for 1 person only
+        Ret :
+            Position of the shoulders : str
+    """
+    neck_x, neck_y              = keypoints[1,:2]
+    rshoulder_x, rshoulder_y    = keypoints[2,:2]
+    lshoulder_x, lshoulder_y    = keypoints[5,:2]
+    if():
+        return "De face"
+    elif():
+        return "De profil droit"
+    elif():
+        return "De profil gauche"
+    else:
+        return "De dos"
 
 def detect_pose_zone(keypoints) -> str:
     """
@@ -105,3 +125,19 @@ def detect_pose_zone(keypoints) -> str:
         return "zone valide"
     else:
         return "zone non valide"
+    
+def detect_interaction(keypoints):
+    """
+    Returns a string that tells us if we can considerate a person interacts with the installation
+        Args :
+            keypoints : OpenPose data received for 1 person only
+        Ret :
+            Person interaction : str
+    """
+    main = detect_pose_main(keypoints)
+    pied = detect_pose_pied(keypoints)
+    zone = detect_pose_zone(keypoints)
+    if(True):
+        return "Interaction"
+    else:
+        return "Pas d'interaction"
