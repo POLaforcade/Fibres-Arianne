@@ -102,14 +102,33 @@ def detect_pose_epaule(keypoints) -> str :
     neck_x, neck_y              = keypoints[1,:2]
     rshoulder_x, rshoulder_y    = keypoints[2,:2]
     lshoulder_x, lshoulder_y    = keypoints[5,:2]
-    if():
+    if(rshoulder_y > neck_y and lshoulder_y > neck_y):
         return "De face"
-    elif():
+    elif(rshoulder_y > neck_y and lshoulder_y < neck_y):
         return "De profil droit"
-    elif():
+    elif(rshoulder_y < neck_y and lshoulder_y > neck_y):
         return "De profil gauche"
     else:
         return "De dos"
+    
+def detect_pose_visage(keypoints) -> str:
+    """
+    Returns the position of the shoulders for a person
+        Args : 
+            keypoints : OpenPose data received for 1 person only
+        Ret :
+            Position of the shoulders : str
+    """
+    if():   # Si la distance x est plus grande que la distance y entre les 2 yeux, il faut affiner en pondérant cette distance
+            # On peut aussi ajouter est-ce que l'oeuil gauche est plus haut que l'oeuil droit pour l'orientation ?
+        return("Regarde devant")
+    elif():
+        return("Regarde a droite")
+    elif():
+        return("Regarde a gauche")
+    else:
+        return("Regarde derriere")
+
 
 def detect_pose_zone(keypoints) -> str:
     """
