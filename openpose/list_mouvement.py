@@ -60,12 +60,12 @@ def detect_pose_main(keypoints) -> str:
     lshoulder_x, lshoulder_y    = keypoints[5,:2]
     lelbow_x, lelbow_y          = keypoints[6,:2]
     lhand_x,lhand_y             = keypoints[7,:2]
-    rthreshold                   = (235, 325)
-    lthreshold                   = (35, 145)
-    if(check_angle_threshold((rshoulder_x, rshoulder_y), (relbow_x, relbow_y), (rhand_x,rhand_y), rthreshold) and \
+    rthreshold                   = (0, 90)
+    lthreshold                   = (0, 90)
+    if(check_angle_threshold((rhand_x,rhand_y), (relbow_x, relbow_y), (rshoulder_x, rshoulder_y), rthreshold) and \
        check_angle_threshold((lshoulder_x, lshoulder_y), (lelbow_x, lelbow_y), (lhand_x,lhand_y), lthreshold)):
         return "2 mains en l'air"
-    elif(check_angle_threshold((rshoulder_x, rshoulder_y), (relbow_x, relbow_y), (rhand_x,rhand_y), rthreshold)):
+    elif(check_angle_threshold((rhand_x,rhand_y), (relbow_x, relbow_y), (rshoulder_x, rshoulder_y), rthreshold)):
         return "Main droite en l'air"
     elif(check_angle_threshold((lshoulder_x, lshoulder_y), (lelbow_x, lelbow_y), (lhand_x,lhand_y), lthreshold)):
         return "Main gauche en l'air"
@@ -102,7 +102,10 @@ def detect_pose_epaule(keypoints) -> str :
     neck_x, neck_y              = keypoints[1,:2]
     rshoulder_x, rshoulder_y    = keypoints[2,:2]
     lshoulder_x, lshoulder_y    = keypoints[5,:2]
-    if(rshoulder_y > neck_y and lshoulder_y > neck_y):
+    mhip_x, mhip_y              = keypoints[8,:2]
+    threshold                   = (0, 20)
+    if(check_angle_threshold((mhip_x, mhip_y), (neck_x, neck_y), (rshoulder_x, rshoulder_y), threshold) or\
+       check_angle_threshold((mhip_x, mhip_y), (neck_x, neck_y), (rshoulder_x, rshoulder_y), (340, 360))):
         return "De face"
     elif(rshoulder_y > neck_y and lshoulder_y < neck_y):
         return "De profil droit"
