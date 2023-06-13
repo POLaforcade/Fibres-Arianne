@@ -120,16 +120,15 @@ def detect_pose_visage(keypoints) -> str:
             Position of the face : str
     """
     nose_x, nose_y              = keypoints[0,:2]
-    reye_x, reye_x              = keypoints[15,:2]
-    leye_x, leye_x              = keypoints[16,:2]
-    rear_x, rear_x              = keypoints[17,:2]
-    lear_x, lear_x              = keypoints[17,:2]
-    if():   # Si la distance x est plus grande que la distance y entre les 2 yeux, il faut affiner en pondérant cette distance
-            # On peut aussi ajouter est-ce que l'oeuil gauche est plus haut que l'oeuil droit pour l'orientation ?
+    reye_x, reye_y              = keypoints[15,:2]
+    leye_x, leye_y              = keypoints[16,:2]
+    rear_x, rear_y              = keypoints[17,:2]
+    lear_x, lear_y              = keypoints[17,:2]
+    if(abs(reye_x - leye_x) > abs(reye_y - leye_y) and reye_x < leye_x):
         return("Regarde devant")
-    elif():
+    elif(abs(reye_x - leye_x) < abs(reye_y - leye_y) and reye_y > leye_y):
         return("Regarde a droite")
-    elif():
+    elif(abs(reye_x - leye_x) < abs(reye_y - leye_y) and reye_y < leye_y):
         return("Regarde a gauche")
     else:
         return("Regarde derriere")
