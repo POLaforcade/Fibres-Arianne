@@ -102,14 +102,37 @@ def detect_pose_epaule(keypoints) -> str :
     neck_x, neck_y              = keypoints[1,:2]
     rshoulder_x, rshoulder_y    = keypoints[2,:2]
     lshoulder_x, lshoulder_y    = keypoints[5,:2]
-    if():
+    if(rshoulder_y > neck_y and lshoulder_y > neck_y):
         return "De face"
-    elif():
+    elif(rshoulder_y > neck_y and lshoulder_y < neck_y):
         return "De profil droit"
-    elif():
+    elif(rshoulder_y < neck_y and lshoulder_y > neck_y):
         return "De profil gauche"
     else:
         return "De dos"
+    
+def detect_pose_visage(keypoints) -> str:
+    """
+    Returns the position of the face for a person
+        Args : 
+            keypoints : OpenPose data received for 1 person only
+        Ret :
+            Position of the face : str
+    """
+    nose_x, nose_y              = keypoints[0,:2]
+    reye_x, reye_y              = keypoints[15,:2]
+    leye_x, leye_y              = keypoints[16,:2]
+    rear_x, rear_y              = keypoints[17,:2]
+    lear_x, lear_y              = keypoints[17,:2]
+    if(abs(reye_x - leye_x) > abs(reye_y - leye_y) and reye_x < leye_x):
+        return("Regarde devant")
+    elif(abs(reye_x - leye_x) < abs(reye_y - leye_y) and reye_y > leye_y):
+        return("Regarde a droite")
+    elif(abs(reye_x - leye_x) < abs(reye_y - leye_y) and reye_y < leye_y):
+        return("Regarde a gauche")
+    else:
+        return("Regarde derriere")
+
 
 def detect_pose_zone(keypoints) -> str:
     """
