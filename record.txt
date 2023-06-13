@@ -1,0 +1,3 @@
+Detecteurs d'émotion à regarder (Réaction ou non)
+En cas d'ambigüité, détécteur de visage
+Variable de probabilité
