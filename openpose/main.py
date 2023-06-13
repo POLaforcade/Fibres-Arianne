@@ -8,14 +8,16 @@ ROW_SIZE = 10  # pixels
 FONT_SIZE = 2
 FONT_THICKNESS = 1
 TEXT_COLOR = (255, 0, 0)  # blue
+FPS = 30 # frame per second
 
 sys.path.append('F:/openpose/build/python/openpose/Release');
 os.environ['PATH']  = os.environ['PATH'] + ';' + 'F:/openpose/build/x64/Release;' +  'F:/openpose/build/bin;'
 import pyopenpose as op
 import cv2
 
-use_open_pose = True
-fps_wait = 40
+use_open_pose   = True
+fps_wait        = 40
+time_s          = 0
 
 if use_open_pose:
     opWrapper = op.WrapperPython()
@@ -31,6 +33,7 @@ if not cap.isOpened():
 
 while cap.isOpened():
     success, frame = cap.read()
+    time_s += 1/FPS
 
     if not success:
         sleep(0.02)
@@ -44,19 +47,8 @@ while cap.isOpened():
 
         if poseKeypoints.size > 1:
             for keypoints in poseKeypoints:
-                neck_x, neck_y      = keypoints[1,:2]
-                neck_x, neck_y      = int(neck_x), int(neck_y)
-                relbow_x, relbow_y  = keypoints[3,:2]
-                relbow_x, relbow_y  = int(relbow_x), int(relbow_y)
-                rhand_x, rhand_y    = keypoints[4,:2]
-                rhand_x, rhand_y    = int(rhand_x), int(rhand_y)
-
-                pose = list_mouvement.detect_pose_zone(keypoints)
-
-                cv2.circle(frame, (neck_x, neck_y), 3, (0, 0, 255))
-                cv2.circle(frame, (relbow_x, relbow_y), 3, (0, 0, 255))
-                cv2.circle(frame, (rhand_x,rhand_y), 3, (0, 0, 255))
-                cv2.putText(frame,  pose, (neck_x, neck_y), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
+                temps = 0
+                cv2.putText(frame,  temps, (neck_x, neck_y), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
 
     if use_open_pose:
         cv2.imshow("output data", frame)
