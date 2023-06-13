@@ -113,12 +113,17 @@ def detect_pose_epaule(keypoints) -> str :
     
 def detect_pose_visage(keypoints) -> str:
     """
-    Returns the position of the shoulders for a person
+    Returns the position of the face for a person
         Args : 
             keypoints : OpenPose data received for 1 person only
         Ret :
-            Position of the shoulders : str
+            Position of the face : str
     """
+    nose_x, nose_y              = keypoints[0,:2]
+    reye_x, reye_x              = keypoints[15,:2]
+    leye_x, leye_x              = keypoints[16,:2]
+    rear_x, rear_x              = keypoints[17,:2]
+    lear_x, lear_x              = keypoints[17,:2]
     if():   # Si la distance x est plus grande que la distance y entre les 2 yeux, il faut affiner en pondérant cette distance
             # On peut aussi ajouter est-ce que l'oeuil gauche est plus haut que l'oeuil droit pour l'orientation ?
         return("Regarde devant")
