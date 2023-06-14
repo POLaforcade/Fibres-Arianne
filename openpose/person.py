@@ -82,8 +82,28 @@ class person(skeleton):
         self.set_start_time(time)
         return res
     
+    # A mettre à jour
     def detect_pose_last(self, pose_keypoints_last) -> int:
-        pass
+        #process new bbox data
+        for hemi,bbox in zip(bbox_hemis, bbox_data):
+            is_known_hand = False
+            pos = np.array([ (bbox[0]+bbox[2])/2, (bbox[1]+bbox[3])/2 ])
+
+            # check if data corresponds to hand that is already being tracked
+            for hand in tracked_hands:
+                if hand.scheduled_for_removal or hemi != hand.hemi:
+                    continue
+
+                dist = np.linalg.norm(hand.position-pos)
+                if dist < config.tracking_radius:
+                    is_known_hand = True
+                    hand.add_pos_to_history(pos, t)
+                    break
+
+            # otherwise, create a new hand and keep track of it
+            if not is_known_hand:
+                tracked_hands.append(TrackedHand(next_hand_id, t, pos, hemi))
+                next_hand_id += 1
 
     def update_last_frame(self, pose_keypoints_last, threshold : float) -> bool:
         """Class method from person that determines where a person was on previous frame and updates the new pose
