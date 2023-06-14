@@ -60,9 +60,22 @@ class skeleton:
 
 class person(skeleton):
     nb_person = 0
-    def __init__(self) -> None:
+    def __init__(self, keypoints) -> None:
+        skeleton.__init__(self, keypoints)
         person.nb_person += 1
         self.id = person.nb_person
+        self.start_time = 0   
+
+    def set_start_time(self, time : float) -> None:
+        self.time = time
+   
+    def get_time_from_start(self, time : float) -> float:
+        return time - self.start_time
+    
+    def get_time_with_reset(self, time : float) -> float:
+        res = time - self.start_time
+        self.set_start_time(time)
+        return res
     
     def __del__(self) -> None:
         person.nb_person -= 1
