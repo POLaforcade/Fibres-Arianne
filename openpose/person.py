@@ -54,7 +54,7 @@ class skeleton:
         res_y = (rshoulder[1] + lshoulder[1] + rhip[1] + lhip[1])/4.0
         return point2D(res_x, res_y)
 
-    def update_keypoints(self, keypoints) -> None:
+    def update_from_array(self, keypoints) -> None:
         for i, keypoint in enumerate(keypoints):
             del self.tab[i]
             self.tab[i] = point2D.from_array(keypoint)
@@ -83,35 +83,24 @@ class person(skeleton):
         self.set_start_time(time)
         return res
     
-    # A mettre à jour
-    def detect_pose_last(self, pose_keypoints_last) -> int:
-        # check if data corresponds to hand that is already being tracked
-        for keypoints in pose_keypoints_last:
-            dist = point2D.get_dist(self.barycenter(), )
+    def detect_pose_last(self, list_persons_last) -> int:
+        # check if data corresponds to person that is already being tracked
+        for i, persons in enumerate(list_persons_last):
+            dist = point2D.get_dist(self.barycenter() ,persons.barycenter())
             if dist < config.tracking_radius:
-                is_known_hand = True
-                hand.add_pos_to_history(pos, t)
-                break
-
-        # otherwise, create a new hand and keep track of it
-        if not is_known_hand:
-            tracked_hands.append(TrackedHand(next_hand_id, t, pos, hemi))
-            next_hand_id += 1
-
-    def update_last_frame(self, pose_keypoints_last, threshold : float) -> bool:
+                return i  
+        return -1
+                
+    def update_last_frame(self, list_persons, list_persons_last) -> None:
         """Class method from person that determines where a person was on previous frame and updates the new pose
             Args :
                 pose_keypoints_last : array with persons detected on last frame
-                thershold : the probablility required to say a person is the same on previous iteration
-            Ret :
-                bool : True if a person was detected on last iteration
         """
-        idx_last, proba = self.detect_pose_last(self, pose_keypoints_last)
-        if(proba > threshold):
-            self.update_keypoints(pose_keypoints_last[idx_last])
-            return True
-        else :
-            return False       
+        idx_last = self.detect_pose_last(self, list_persons_last)
+        if(idx_last == -1):
+            np.append(list_persons, self)
+        else:
+            list_persons[idx_last].tab = self.tab
 
     def __del__(self) -> None:
         person.nb_person -= 1

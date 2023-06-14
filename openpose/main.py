@@ -49,7 +49,7 @@ while cap.isOpened():
         if poseKeypoints.size > 1:
             for keypoints in poseKeypoints:
                 temps = 0
-                cv2.putText(frame,  temps, (neck_x, neck_y), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
+                cv2.putText(frame,  temps, (0, 0), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
 
     if use_open_pose:
         cv2.imshow("output data", frame)
