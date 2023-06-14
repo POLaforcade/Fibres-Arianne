@@ -91,10 +91,11 @@ class person(skeleton):
                 return i  
         return -1
                 
-    def update_last_frame(self, list_persons, list_persons_last) -> None:
+    def update_from_last_frame(self, list_persons, list_persons_last) -> None:
         """Class method from person that determines where a person was on previous frame and updates the new pose
             Args :
-                pose_keypoints_last : array with persons detected on last frame
+                list_person : np.array to update
+                list_person_last : np.array with the person from last frame
         """
         idx_last = self.detect_pose_last(self, list_persons_last)
         if(idx_last == -1):

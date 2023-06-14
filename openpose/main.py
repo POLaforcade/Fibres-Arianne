@@ -3,6 +3,7 @@ from time import sleep
 import sys,os
 import list_mouvement
 import config
+from person import person
 
 MARGIN = config.MARGIN
 ROW_SIZE = config.ROW_SIZE
@@ -41,6 +42,7 @@ while cap.isOpened():
         continue
 
     if use_open_pose:
+        list_person = np.empty(100, dtype=person)
         datum.cvInputData = frame
         opWrapper.emplaceAndPop([datum])
 
@@ -48,8 +50,10 @@ while cap.isOpened():
 
         if poseKeypoints.size > 1:
             for keypoints in poseKeypoints:
-                temps = 0
-                cv2.putText(frame,  temps, (0, 0), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
+                person(keypoints).update_from_last_frame(list_person, list_person_last)
+                 # cv2.putText(frame,  temps, (0, 0), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
+
+        list_person_last = list_person
 
     if use_open_pose:
         cv2.imshow("output data", frame)
