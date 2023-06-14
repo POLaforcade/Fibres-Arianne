@@ -53,6 +53,11 @@ class skeleton:
         res_y = (rshoulder[1] + lshoulder[1] + rhip[1] + lhip[1])/4.0
         return point2D(res_x, res_y)
 
+    def update_keypoints(self, keypoints) -> None:
+        for i, keypoint in enumerate(keypoints):
+            del self.tab[i]
+            self.tab[i] = point2D.from_array(keypoint)
+
     def Show(self) -> None:
         for label, keypoint in zip(skeleton.labels, self.tab):
             print(label, " : ", end='')
@@ -64,10 +69,10 @@ class person(skeleton):
         skeleton.__init__(self, keypoints)
         person.nb_person += 1
         self.id = person.nb_person
-        self.start_time = 0   
+        self.start_time = 0
 
     def set_start_time(self, time : float) -> None:
-        self.time = time
+        self.start_time = time
    
     def get_time_from_start(self, time : float) -> float:
         return time - self.start_time
@@ -77,6 +82,24 @@ class person(skeleton):
         self.set_start_time(time)
         return res
     
+    def detect_pose_last(self, pose_keypoints_last) -> int:
+        pass
+
+    def update_last_frame(self, pose_keypoints_last, threshold : float) -> bool:
+        """Class method from person that determines where a person was on previous frame and updates the new pose
+            Args :
+                pose_keypoints_last : array with persons detected on last frame
+                thershold : the probablility required to say a person is the same on previous iteration
+            Ret :
+                bool : True if a person was detected on last iteration
+        """
+        idx_last, proba = self.detect_pose_last(self, pose_keypoints_last)
+        if(proba > threshold):
+            self.update_keypoints(pose_keypoints_last[idx_last])
+            return True
+        else :
+            return False       
+
     def __del__(self) -> None:
         person.nb_person -= 1
 
