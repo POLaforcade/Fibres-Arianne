@@ -2,13 +2,14 @@ import numpy as np
 from time import sleep
 import sys,os
 import list_mouvement
+import config
 
-MARGIN = 10  # pixels
-ROW_SIZE = 10  # pixels
-FONT_SIZE = 2
-FONT_THICKNESS = 1
-TEXT_COLOR = (255, 0, 0)  # blue
-FPS = 30 # frame per second
+MARGIN = config.MARGIN
+ROW_SIZE = config.ROW_SIZE
+FONT_SIZE = config.FONT_SIZE
+FONT_THICKNESS = config.FONT_THICKNESS
+TEXT_COLOR = config.TEXT_COLOR
+FPS = config.FPS
 
 sys.path.append('F:/openpose/build/python/openpose/Release');
 os.environ['PATH']  = os.environ['PATH'] + ';' + 'F:/openpose/build/x64/Release;' +  'F:/openpose/build/bin;'
