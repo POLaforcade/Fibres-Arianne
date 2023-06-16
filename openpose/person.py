@@ -1,5 +1,8 @@
 import numpy as np
 import config
+import random
+
+TRACKING_RAIDUS = config.TRACKING_RAIDUS
 
 class point2D:
     def __init__(self, x = 0, y = 0) -> None:
@@ -25,7 +28,10 @@ class point2D:
         return np.array([self.x, self.y])
     
     def Show(self) -> None:
-        print(self.x,";",self.y)
+        if(self.x == 0 and self.y == 0):
+            print("Pas d'infos sur le point")
+        else :
+            print(self.x,";",self.y)
 
     def get_dist(p1 : 'point2D', p2 : 'point2D') -> float:
         return np.sqrt((p1.x - p2.x)**2+(p1.y - p2.y)**2)
@@ -42,8 +48,8 @@ class skeleton:
     
     def __init__(self, keypoints) -> None:
         self.tab = np.empty(26, dtype=point2D)
-        for i, keypoint in enumerate(keypoints):
-            self.tab[i] = point2D.from_array(keypoint)
+        for i in range (25):
+            self.tab[i] = point2D(keypoints[i][0], keypoints[i][1])
 
     def barycenter(self) -> 'point2D':
         rshoulder = point2D.get_array(self.tab[2])
@@ -62,14 +68,16 @@ class skeleton:
     def Show(self) -> None:
         for label, keypoint in zip(skeleton.labels, self.tab):
             print(label, " : ", end='')
-            keypoint.Show()
+            if keypoint is None:
+                print("Keypoint is NoneType")
+            else :
+                keypoint.Show()
 
 class person(skeleton):
     nb_person = 0
     def __init__(self, keypoints) -> None:
         skeleton.__init__(self, keypoints)
-        person.nb_person += 1
-        self.id = person.nb_person
+        self.id = random.randint(0, 100)
         self.start_time = 0
 
     def set_start_time(self, time : float) -> None:
@@ -86,25 +94,27 @@ class person(skeleton):
     def detect_pose_last(self, list_persons_last) -> int:
         # check if data corresponds to person that is already being tracked
         for i, persons in enumerate(list_persons_last):
+            if(persons == None):
+                break
             dist = point2D.get_dist(self.barycenter() ,persons.barycenter())
-            if dist < config.tracking_radius:
-                return i  
+            if dist < config.TRACKING_RAIDUS:
+                return i
         return -1
                 
     def update_from_last_frame(self, list_persons, list_persons_last) -> None:
+        print(list_persons_last)
         """Class method from person that determines where a person was on previous frame and updates the new pose
             Args :
                 list_person : np.array to update
                 list_person_last : np.array with the person from last frame
         """
-        idx_last = self.detect_pose_last(self, list_persons_last)
+        idx_last = self.detect_pose_last(list_persons_last)
         if(idx_last == -1):
-            np.append(list_persons, self)
+            list_persons[get_nb_person()] = self
         else:
+            list_persons[idx_last] = list_persons_last[idx_last]
+            list_persons[idx_last].id = list_persons_last[idx_last].id
             list_persons[idx_last].tab = self.tab
-
-    def __del__(self) -> None:
-        person.nb_person -= 1
 
 def get_nb_person() -> None:
     return person.nb_person

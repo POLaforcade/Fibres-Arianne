@@ -20,6 +20,8 @@ import cv2
 use_open_pose   = True
 fps_wait        = 40
 time_s          = 0
+list_person = np.empty(0, dtype=person)
+list_person_last = np.empty(0, dtype=person)
 
 if use_open_pose:
     opWrapper = op.WrapperPython()
@@ -47,12 +49,18 @@ while cap.isOpened():
         opWrapper.emplaceAndPop([datum])
 
         poseKeypoints = datum.poseKeypoints
+        cnt_person = 0
 
         if poseKeypoints.size > 1:
             for keypoints in poseKeypoints:
-                person(keypoints).update_from_last_frame(list_person, list_person_last)
-                 # cv2.putText(frame,  temps, (0, 0), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
+                cnt_person += 1
+                pers = person(keypoints)
+                pers.update_from_last_frame(list_person, list_person_last)
+                x = int(keypoints[0][0])
+                y = int(keypoints[0][1])
+                cv2.putText(frame,  str(pers.id), (x, y), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
 
+        person.nb_person = cnt_person
         list_person_last = list_person
 
     if use_open_pose:
