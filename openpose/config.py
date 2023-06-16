@@ -1,4 +1,4 @@
-TRACKING_RAIDUS = 100 # pixels
+TRACKING_RADIUS = 40 # pixels
 MARGIN = 10  # pixels
 ROW_SIZE = 10  # pixels
 FONT_SIZE = 8

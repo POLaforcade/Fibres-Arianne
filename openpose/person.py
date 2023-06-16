@@ -3,7 +3,7 @@ import config
 import random
 import cv2
 
-TRACKING_RADIUS = config.TRACKING_RAIDUS
+TRACKING_RADIUS = config.TRACKING_RADIUS
 
 class point2D:
     def __init__(self, x = 0, y = 0) -> None:
@@ -57,8 +57,17 @@ class skeleton:
         lshoulder = point2D.get_array(self.tab[5])
         rhip      = point2D.get_array(self.tab[9])
         lhip      = point2D.get_array(self.tab[12])
-        res_x = (rshoulder[0] + lshoulder[0] + rhip[0] + lhip[0])/4.0
-        res_y = (rshoulder[1] + lshoulder[1] + rhip[1] + lhip[1])/4.0
+        card = 4
+        if(rshoulder.all() == None):
+            card -= 1
+        if(lshoulder.all() == None):
+            card -= 1
+        if(rhip.all() == None):
+            card -= 1
+        if(lhip.all() == None):
+            card -= 1
+        res_x = (rshoulder[0] + lshoulder[0] + rhip[0] + lhip[0])/card
+        res_y = (rshoulder[1] + lshoulder[1] + rhip[1] + lhip[1])/card
         return point2D(res_x, res_y)
 
     def update_from_array(self, keypoints) -> None:
@@ -108,19 +117,15 @@ class person(skeleton):
                     return i
         return -1
     
-    def detect_pose_last(keypoints, list_person, list_person_last) -> None:
+    def detect_pose_last(keypoints, list_person, list_person_last) -> 'person':
         idx = person.get_idx_last(keypoints, list_person_last)
-        print(idx)
         if(idx == -1) : # the person doesnt exist
             list_person[person.nb_person-1] = person(keypoints)
+            return list_person[person.nb_person-1]
         else: # the person already exists
             list_person[idx] = list_person_last[idx]
             list_person[idx].update_from_array(keypoints)
-
-    def Show_id(frame, list_person):
-        for person in list_person:
-            # Displays person id
-            frame = cv2.putText(frame,  str(person.id), person.tab[0].get_array(), cv2.FONT_HERSHEY_PLAIN, config.FONT_SIZE, config.TEXT_COLOR, config.FONT_THICKNESS)
+            return list_person[idx]
             
 
 def get_nb_person() -> None:
