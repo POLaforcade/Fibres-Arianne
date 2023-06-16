@@ -1,8 +1,9 @@
 import numpy as np
 import config
 import random
+import cv2
 
-TRACKING_RAIDUS = config.TRACKING_RAIDUS
+TRACKING_RADIUS = config.TRACKING_RAIDUS
 
 class point2D:
     def __init__(self, x = 0, y = 0) -> None:
@@ -62,7 +63,6 @@ class skeleton:
 
     def update_from_array(self, keypoints) -> None:
         for i, keypoint in enumerate(keypoints):
-            del self.tab[i]
             self.tab[i] = point2D.from_array(keypoint)
 
     def Show(self) -> None:
@@ -77,8 +77,12 @@ class person(skeleton):
     nb_person = 0
     def __init__(self, keypoints) -> None:
         skeleton.__init__(self, keypoints)
+        person.nb_person += 1 
         self.id = random.randint(0, 100)
         self.start_time = 0
+
+    def __del__(self) -> None:
+        person.nb_person -= 1
 
     def set_start_time(self, time : float) -> None:
         self.start_time = time
@@ -91,30 +95,33 @@ class person(skeleton):
         self.set_start_time(time)
         return res
     
-    def detect_pose_last(self, list_persons_last) -> int:
-        # check if data corresponds to person that is already being tracked
-        for i, persons in enumerate(list_persons_last):
-            if(persons == None):
-                break
-            dist = point2D.get_dist(self.barycenter() ,persons.barycenter())
-            if dist < config.TRACKING_RAIDUS:
-                return i
+    def get_idx_last(keypoints, list_person_last) -> int:
+        rshoulder_x, rshoulder_y    = keypoints[2,:2]
+        lshoulder_x, lshoulder_y    = keypoints[5,:2]
+        rhip_x, rhip_y              = keypoints[9,:2]
+        lhip_x, lhip_y              = keypoints[12,:2]
+        c = point2D((rshoulder_x+lshoulder_x+rhip_x+lhip_x)/4.0, (rshoulder_y+lshoulder_y+rhip_y+lhip_y)/4.0)
+        for i, person_last in enumerate(list_person_last) :
+            if(person_last != None):
+                dist = point2D.get_dist(c, person_last.barycenter())
+                if (dist < TRACKING_RADIUS):
+                    return i
         return -1
-                
-    def update_from_last_frame(self, list_persons, list_persons_last) -> None:
-        print(list_persons_last)
-        """Class method from person that determines where a person was on previous frame and updates the new pose
-            Args :
-                list_person : np.array to update
-                list_person_last : np.array with the person from last frame
-        """
-        idx_last = self.detect_pose_last(list_persons_last)
-        if(idx_last == -1):
-            list_persons[get_nb_person()] = self
-        else:
-            list_persons[idx_last] = list_persons_last[idx_last]
-            list_persons[idx_last].id = list_persons_last[idx_last].id
-            list_persons[idx_last].tab = self.tab
+    
+    def detect_pose_last(keypoints, list_person, list_person_last) -> None:
+        idx = person.get_idx_last(keypoints, list_person_last)
+        print(idx)
+        if(idx == -1) : # the person doesnt exist
+            list_person[person.nb_person-1] = person(keypoints)
+        else: # the person already exists
+            list_person[idx] = list_person_last[idx]
+            list_person[idx].update_from_array(keypoints)
+
+    def Show_id(frame, list_person):
+        for person in list_person:
+            # Displays person id
+            frame = cv2.putText(frame,  str(person.id), person.tab[0].get_array(), cv2.FONT_HERSHEY_PLAIN, config.FONT_SIZE, config.TEXT_COLOR, config.FONT_THICKNESS)
+            
 
 def get_nb_person() -> None:
     return person.nb_person

@@ -49,18 +49,13 @@ while cap.isOpened():
         opWrapper.emplaceAndPop([datum])
 
         poseKeypoints = datum.poseKeypoints
-        cnt_person = 0
 
         if poseKeypoints.size > 1:
             for keypoints in poseKeypoints:
-                cnt_person += 1
-                pers = person(keypoints)
-                pers.update_from_last_frame(list_person, list_person_last)
-                x = int(keypoints[0][0])
-                y = int(keypoints[0][1])
-                cv2.putText(frame,  str(pers.id), (x, y), cv2.FONT_HERSHEY_PLAIN, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
+                person.detect_pose_last(keypoints, list_person, list_person_last)
 
-        person.nb_person = cnt_person
+        
+        frame = person.Show_id(frame, list_person)
         list_person_last = list_person
 
     if use_open_pose:
