@@ -20,7 +20,8 @@ import cv2
 use_open_pose   = True
 fps_wait        = 40
 time_s          = 0
-list_person = np.empty([100, 5], dtype='person')
+list_person = np.empty([100], dtype='person')
+list_person_last = np.empty([100], dtype='person')
 
 if use_open_pose:
     opWrapper = op.WrapperPython()
@@ -43,7 +44,7 @@ while cap.isOpened():
         continue
 
     if use_open_pose:
-        list_person = np.empty(100, dtype=person)
+        list_person.fill(None)
         datum.cvInputData = frame
         opWrapper.emplaceAndPop([datum])
 
@@ -52,15 +53,6 @@ while cap.isOpened():
         if poseKeypoints.size > 1:
             for keypoints in poseKeypoints:
                 pers = person.detect_pose_last(keypoints, list_person, list_person_last)
-                neck_x, neck_y = keypoints[0,:2]
-                neck_x = int(neck_x)
-                neck_y = int(neck_y)
-                bary_x, bary_y = pers.barycenter().get_value()
-                bary_x = int(bary_x)
-                bary_y = int(bary_y)
-                frame = cv2.circle(frame, (bary_x, bary_y), 10, (0, 0, 255), -1)
-                frame = cv2.circle(frame, (bary_x, bary_y), config.TRACKING_RADIUS, (0, 0, 255), 2)
-                frame = cv2.putText(frame,  str(pers.id), (neck_x, neck_y), cv2.FONT_HERSHEY_PLAIN, config.FONT_SIZE, config.TEXT_COLOR, config.FONT_THICKNESS)
 
         list_person_last = list_person
 
