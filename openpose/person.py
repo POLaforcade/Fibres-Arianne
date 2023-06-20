@@ -47,10 +47,11 @@ class skeleton:
                 "Left Small Toe"    , "Left Heel"       , "Right Big Toe"   , "Right Small Toe" , \
                 "Right Heel"        , "Background")
     
-    def __init__(self, keypoints) -> None:
-        self.tab = np.empty(26, dtype=point2D)
-        for i in range (25):
-            self.tab[i] = point2D(keypoints[i][0], keypoints[i][1])
+    def __init__(self, keypoints = None) -> None:
+        if(keypoints != None) : 
+            self.tab = np.empty(26, dtype=point2D)
+            for i in range (25):
+                self.tab[i] = point2D(keypoints[i][0], keypoints[i][1])
 
     def barycenter(self) -> 'point2D':
         rshoulder = point2D.get_array(self.tab[2])
@@ -75,6 +76,9 @@ class skeleton:
             self.tab[i] = point2D.from_array(keypoint)
 
     def Show(self) -> None:
+        if(self.tab == None):
+            print("Error : Person initiated but not defined")
+            return
         for label, keypoint in zip(skeleton.labels, self.tab):
             print(label, " : ", end='')
             if keypoint is None:
@@ -84,7 +88,7 @@ class skeleton:
 
 class person(skeleton):
     nb_person = 0
-    def __init__(self, keypoints) -> None:
+    def __init__(self, keypoints =  None) -> None:
         skeleton.__init__(self, keypoints)
         person.nb_person += 1 
         self.id = random.randint(0, 100)

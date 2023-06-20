@@ -20,8 +20,7 @@ import cv2
 use_open_pose   = True
 fps_wait        = 40
 time_s          = 0
-list_person = np.empty(0, dtype=person)
-list_person_last = np.empty(0, dtype=person)
+list_person = np.empty([100, 5], dtype='person')
 
 if use_open_pose:
     opWrapper = op.WrapperPython()
