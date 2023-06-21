@@ -1,3 +1,28 @@
 Detecteurs d'émotion à regarder (Réaction ou non)
 En cas d'ambigüité, détécteur de visage
 Variable de probabilité
+
+Bilan expe 21/06/2023 : 
+
+Préparation des tablettes, les liens des questionnaires sont dans les bookmarks.
+Création d'un questionnaire dédié à l'experience MM.
+Enregistrements flux vidéos ~3Omin
+2 réponses de personnes au questionnaire avec 1 personne qui a arrété à la moitié. (Arrêt pour limite de temps)
+Rediscuter temps de réponse au questionnaire. actuellemetn 10 à 15 min
+Les réponses et enrgeistrements des flux ne sont pas synchronisés.
+Proposer aux gens de s'asseoir et/ou s'installer dans le forum des images.
+
+Script pour interpeller les gens. Comment faire que les gens s'arretent ?
+
+"
+Bonjour, 
+
+Je m'appelle ...., , je suis chercheur à l'université Paris-Saclay. Nous réalisons une étude avec le forum des images
+sur ce dispositif. Avez-vous quelques minutes (version non spontanée : pour essayer le dispositif et) pour répondre à un questionnaire ? 
+"
+
+Difficultées à résoudre : 
+- Création d'un réseau qui permet d'avoir accès à intrenet et en même temps au serveur des kinects.
+- Traduire les questionnaires en anglais (2-3 personnes interpellés qui parlent anglais)
+
+Voir pour d'autres séances possibles. 

@@ -256,9 +256,12 @@ class person(skeleton):
             list_person[idx].update_from_array(keypoints)
             return list_person[idx]
             
-
 def get_nb_person() -> None:
     """
-    Getter for the number of person on a frame
+    Get the number of person on a frame
     """
     return person.nb_person
+
+def clear_first_slot(tab : np.ndarray):
+    for i in range (config.NB_PERSON_MAX):
+        tab[i] = np.append(None, tab[i,:4])

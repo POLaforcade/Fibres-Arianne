@@ -20,8 +20,7 @@ import cv2
 use_open_pose   = True
 fps_wait        = 40
 time_s          = 0
-list_person = np.empty([100], dtype='person')
-list_person_last = np.empty([100], dtype='person')
+list_person = np.empty([100, 5], dtype='person')
 
 if use_open_pose:
     opWrapper = op.WrapperPython()
@@ -52,9 +51,9 @@ while cap.isOpened():
 
         if poseKeypoints.size > 1:
             for keypoints in poseKeypoints:
-                pers = person.detect_pose_last(keypoints, list_person, list_person_last)
+                pers = person.detect_pose_last(keypoints, list_person[0], list_person[1])
 
-        list_person_last = list_person
+        person.clear_first_slot(list_person)
 
     if use_open_pose:
         cv2.imshow("output data", frame)
