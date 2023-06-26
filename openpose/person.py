@@ -180,6 +180,9 @@ class person(skeleton):
         # Set the starting time of a person
         self.start_time = time
 
+        # Goes to true if we have enough sample to say that it's a person
+        self.is_tracked = False
+
     def __del__(self) -> None:
         """
         Class destructor
@@ -262,6 +265,11 @@ def get_nb_person() -> None:
     """
     return person.nb_person
 
-def clear_first_slot(tab : np.ndarray):
+def clear_first_column(tab : np.ndarray):
+    """
+    Create an empty column at the beginnign of an array to save new openpose data
+    Args : 
+        tab : np.ndarray, the table we want to add a new column in
+    """
     for i in range (config.NB_PERSON_MAX):
         tab[i] = np.append(None, tab[i,:4])

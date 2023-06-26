@@ -4,6 +4,7 @@ import sys,os
 import list_mouvement
 import config
 from person import person
+import person
 
 MARGIN = config.MARGIN
 ROW_SIZE = config.ROW_SIZE
@@ -53,7 +54,7 @@ while cap.isOpened():
             for keypoints in poseKeypoints:
                 pers = person.detect_pose_last(keypoints, list_person[0], list_person[1])
 
-        person.clear_first_slot(list_person)
+        person.clear_first_column(list_person)
 
     if use_open_pose:
         cv2.imshow("output data", frame)
