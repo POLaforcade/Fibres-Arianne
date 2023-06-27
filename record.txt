@@ -27,4 +27,22 @@ Difficultées à résoudre :
 
 Voir pour d'autres séances possibles. 
 
-22/06/2023
+26/06/2023
+
+Problème de Fonctionnement avec la version actuelle, Se servir d'un tableau de person dans le main n'est pas idéal car
+peu optimisé et on doit créer une nouvelle person à chaque fois qu'on met à jour sa position ce qui complique le compte 
+des persons dur l'image. Début de développement d'une nouvelle version avec historique des squelettes inétgrés dans l'objet
+On peut donc créer une méthode pour éstimer la position du barycentre à la frame t+1 jusqu'à t+n pour retrouver la personne 
+avec n le nombre de frame à partir desquels on estime que la personne est perdue.
+
+27/06/2023
+
+Discussion autour du sujet du GitHub, il faudrait faire plus de communication autour de l'outil que j'utilise.
+Avancement sur le nouveau fonctionnement de tracking, il faut créer une nouvelle fonction pour mettre à joue
+le tableau avec toutes les personnes plutôt que de les mettre à jour une à une dans le main
+
+Dans la fonction update, il faut trouver une égalité qui permet de détécter si une personne a été modifiée depuis 
+la frame précédente. Je me sers de est-ce que le squelette de la personne est différent du dernier dans l'hitorique.
+Si oui, sa pose a été modifée et la personne est trackée. Sinon, on l'a perdu et on incrémente le conteur de perte.
+
+Il faudrait aussi créer une fonction pour mettre à jour la frame openCV uniquement avec les personnes réélement trackées?

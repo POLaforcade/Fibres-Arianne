@@ -106,7 +106,7 @@ class skeleton:
         """
         if(keypoints.all() != None) : 
             self.tab = np.empty(26, dtype=point2D)
-            for i in range (25):
+            for i in range (26):
                 self.tab[i] = point2D(keypoints[i][0], keypoints[i][1])
 
     def barycenter(self) -> 'point2D':
@@ -145,7 +145,7 @@ class skeleton:
         """
         Const : dipslays all the kepoints of a person
         """
-        if(self.tab == None):
+        if(type(self.tab) != np.ndarray):
             print("Error : Person initiated but not defined")
             return
         for label, keypoint in zip(skeleton.labels, self.tab):
@@ -180,8 +180,12 @@ class person(skeleton):
         # Set the starting time of a person
         self.start_time = time
 
-        # Goes to true if we have enough sample to say that it's a person
-        self.is_tracked = False
+        # Count for each iteration a person appears or disappears
+        self.is_tracked = 0
+        self.is_lost = 0
+
+        # Creates an empty table for saving person pose
+        self.history = np.empty([100])
 
     def __del__(self) -> None:
         """
@@ -220,44 +224,66 @@ class person(skeleton):
         self.set_start_time(time)
         return res
     
-    def get_idx_last(keypoints, list_person_last) -> int:
+    def get_idx_last(keypoints, list_person) -> int:
         """
-        Functions that determines whether or not a person was present on last frame
+        Functions that determines if a person is in a list of person depending on the barycenter position
         Args : 
-            keypoints : np.array, openpose data output
+            keypoints : np.ndarray, openpose data output
+            list_person : np.ndarray, the list of person
         Ret :
             idx_last : int, index of the person in list_person_last or -1 if None is found
         """
+        card = 0.
         rshoulder_x, rshoulder_y    = keypoints[2,:2]
         lshoulder_x, lshoulder_y    = keypoints[5,:2]
         rhip_x, rhip_y              = keypoints[9,:2]
         lhip_x, lhip_y              = keypoints[12,:2]
-        c = point2D((rshoulder_x+lshoulder_x+rhip_x+lhip_x)/4.0, (rshoulder_y+lshoulder_y+rhip_y+lhip_y)/4.0)
-        for i, person_last in enumerate(list_person_last) :
+        if(rshoulder_x != None  and rshoulder_y != None):
+            card += 1
+        if(lshoulder_x != None  and lshoulder_y != None):
+            card += 1
+        if(rhip_x != None  and rhip_y != None):
+            card += 1
+        if(lhip_x != None  and lhip_y != None):
+            card += 1
+        c = point2D((rshoulder_x+lshoulder_x+rhip_x+lhip_x)/card, (rshoulder_y+lshoulder_y+rhip_y+lhip_y)/card)
+        for i, person_last in enumerate(list_person) :
             if(person_last != None):
                 dist = point2D.get_dist(c, person_last.barycenter())
                 if (dist < TRACKING_RADIUS):
                     return i
         return -1
     
-    def detect_pose_last(keypoints, list_person, list_person_last) -> 'person':
+    def tracking(keypoints, list_person) -> 'person':
         """
-        Function that update list_person for each person detect on the frame
+        Function that update list_person with new openpose sample
         Args :
             keypoints : np.array, openpose output for one person
             list_person : np.array, list of person to be updated
-            list_person_last : np.array, list of person detected on last frame
         Ret : 
             person : 'person', new person or person with updated pose
         """
-        idx = person.get_idx_last(keypoints, list_person_last)
+        idx = person.get_idx_last(keypoints, list_person)
         if(idx == -1) : # the person doesnt exist
             list_person[person.nb_person-1] = person(keypoints)
             return list_person[person.nb_person-1]
         else: # the person already exists
-            list_person[idx] = list_person_last[idx]
             list_person[idx].update_from_array(keypoints)
+            list_person[idx].is_lost = 0
+            list_person[idx].is_tracked += 1
             return list_person[idx]
+        
+    def update(self) -> 'person':
+        """
+        Function that updates a person history
+        """
+        if(self == self.history): # The person wasn't found
+            self.history = np.append(None, self.history[:99])
+            self.is_lost += 1
+        else : # The person was found
+            # Add the person's skeleton to it's history
+            self.history = np.append(self.tab, self.history[:99])
+
             
 def get_nb_person() -> None:
     """
