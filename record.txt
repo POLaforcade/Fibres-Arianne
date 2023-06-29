@@ -46,3 +46,12 @@ la frame précédente. Je me sers de est-ce que le squelette de la personne est 
 Si oui, sa pose a été modifée et la personne est trackée. Sinon, on l'a perdu et on incrémente le conteur de perte.
 
 Il faudrait aussi créer une fonction pour mettre à jour la frame openCV uniquement avec les personnes réélement trackées?
+
+29/06/2023
+
+Rajouter une prédiction de trajevtoire pour retrouvber la personne. Extrapolation des n deniers déplacements et projection sur la droite. On doit pouvoir retrouver danbs la zone
+autour du centre avec un rayon de taille TRACKING_RADIUS. Le TRACKING_RADIUS peut auigmenter en fonction du nombre de frame perdu (pondéré par un Kp). 
+Voir en fonction du comporement de la personne. Plot les trajectoires des gens. Faire une méthode pour affciher les trajectoires en rajoutant des lignes sur openCV.
+Mettre en forme l'affichage des trajectoires
+
+Pour GUI : regarder pyQT
