@@ -185,7 +185,7 @@ class person(skeleton):
         self.is_lost = 0
 
         # Creates an empty table for saving person pose
-        self.history = np.empty([100])
+        self.history = np.empty(0)
 
     def __del__(self) -> None:
         """
@@ -254,12 +254,12 @@ class person(skeleton):
                     return i
         return -1
     
-    def tracking(keypoints, list_person) -> 'person':
+    def tracking(keypoints : np.ndarray, list_person : np.ndarray) -> 'person':
         """
         Function that update list_person with new openpose sample
         Args :
-            keypoints : np.array, openpose output for one person
-            list_person : np.array, list of person to be updated
+            keypoints : np.ndarray, openpose output data
+            list_person : np.ndarray, list of person to be updated
         Ret : 
             person : 'person', new person or person with updated pose
         """
@@ -269,20 +269,24 @@ class person(skeleton):
             return list_person[person.nb_person-1]
         else: # the person already exists
             list_person[idx].update_from_array(keypoints)
-            list_person[idx].is_lost = 0
-            list_person[idx].is_tracked += 1
             return list_person[idx]
         
     def update(self) -> 'person':
         """
         Function that updates a person history
         """
-        if(self == self.history): # The person wasn't found
-            self.history = np.append(None, self.history[:99])
+        if((self.history.size == 0)): # The person has no history
+            self.history = np.array([self.tab])
+
+        elif((self.tab == self.history[0]).all()): # The person wasn't found
+            self.history = np.vstack((self.history[0], self.history))
             self.is_lost += 1
+
         else : # The person was found
             # Add the person's skeleton to it's history
-            self.history = np.append(self.tab, self.history[:99])
+            self.history = np.vstack((self.tab, self.history))
+            self.is_tracked += 1
+            self.is_lost = 0
 
             
 def get_nb_person() -> None:
@@ -299,3 +303,11 @@ def clear_first_column(tab : np.ndarray):
     """
     for i in range (config.NB_PERSON_MAX):
         tab[i] = np.append(None, tab[i,:4])
+
+def Show_list_person(frame, list_person):
+    for i in range (config.NB_PERSON_MAX):
+        x, y = list_person[i].tab[0].get_value()
+        x, y = int(x), int(y)
+        # Affichage des différents paramètres
+        frame = cv2.addText(frame, str(list_person[i].is_tracked), (x, y), cv2.FONT_HERSHEY_PLAIN, config.FONT_SIZE, config.TEXT_COLOR, config.FONT_THICKNESS)
+    return frame

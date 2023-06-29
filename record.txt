@@ -42,7 +42,7 @@ Avancement sur le nouveau fonctionnement de tracking, il faut créer une nouvell
 le tableau avec toutes les personnes plutôt que de les mettre à jour une à une dans le main
 
 Dans la fonction update, il faut trouver une égalité qui permet de détécter si une personne a été modifiée depuis 
-la frame précédente. Je me sers de est-ce que le squelette de la personne est différent du dernier dans l'hitorique.
+la frame précédente. Je me sers de est-ce que le squelette de la personne est différent du dernier dans l'historique.
 Si oui, sa pose a été modifée et la personne est trackée. Sinon, on l'a perdu et on incrémente le conteur de perte.
 
 Il faudrait aussi créer une fonction pour mettre à jour la frame openCV uniquement avec les personnes réélement trackées?

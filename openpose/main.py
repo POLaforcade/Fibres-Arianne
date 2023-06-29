@@ -52,9 +52,12 @@ while cap.isOpened():
 
         if poseKeypoints.size > 1:
             for keypoints in poseKeypoints:
-                pers = person.detect_pose_last(keypoints, list_person[0], list_person[1])
+                person.person.tracking(keypoints, list_person)
 
-        person.clear_first_column(list_person)
+        for p in list_person :
+            p.update()
+
+    frame = person.Show_list_person(frame, list_person)
 
     if use_open_pose:
         cv2.imshow("output data", frame)

@@ -14,3 +14,7 @@ list_person[1] = p2
 tab.fill(200)
 p3 = person(tab)
 list_person[2] = p3
+
+keypoints = np.ones([26, 2])
+keypoints[2] = np.array([2 ,2])
+person.tracking(keypoints, list_person)
