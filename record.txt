@@ -46,29 +46,3 @@ la frame précédente. Je me sers de est-ce que le squelette de la personne est 
 Si oui, sa pose a été modifée et la personne est trackée. Sinon, on l'a perdu et on incrémente le conteur de perte.
 
 Il faudrait aussi créer une fonction pour mettre à jour la frame openCV uniquement avec les personnes réélement trackées?
-
-Bilan expe 30/06/2023:
-
-Experience au forum des images. 
-3 réponses non spontanées et dont 2 ne sont pas finies. 
-
-Observations :
-Le questionnaire est trop long, risque d’abandonner au milieu. Prévoir une réunion pour discuter du questionnaire. Il faut être tous d’accord sur le questionnaire.
-Noter les questions sur lesquelles il y a des doutes.
-Si il faut retirer des questions, peut-être regarder dans le questionnaire C-Link.
-Changer l’ordre des questions pour mettre les plus importantes en premier
-Réfléchir à une façon d’arrêter le questionnaire au milieu
-Idéalement, il faut donner la tablette à la personne. Il ne faut pas que la personne se sente jugée par la personne qui pose les questions.
-Voir pour régler les problèmes techniques (Ça a planté 3x en 1h et difficultées à faire le lien entre trajectoires et personnes)
-Le réseau est très faible et donc la performance du viewer est moyenne.
-Aucune personne n’a interagit spontanément avec l’installation.
-
-Voir pour la traduction en Anglais.
-L'horaire va probablement jouer sur le nombre de gens qui interagissent.
-
-Prochaine réunion : Mercredi 05/07/2023 à 12h00
-
-Données sans interaction en mettant une ligne à ne pas franchir. Le questionnaire est le même. En quoi l’interaction modifie les réponses au questionnaire.
-
-Préparation présentation LISN, création d'un powerpoint, il faut faire des belles images des Fibres d'Arianne pour les mettre en intrdouction
-du powerpoint.
