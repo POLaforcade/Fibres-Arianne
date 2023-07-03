@@ -39,43 +39,45 @@ def visualize(image, detection_result) -> np.ndarray:
 
   return image
 
-def Show_object(file_path : str):
-    """Show a video with bounding boxes around detected person
-    Args :
-        file_path : path to the RGB video that msut be computed
-    """
-    # Open capture
-    cap = cv2.VideoCapture(file_path)
-    # Open model
-    model_path = 'modeles\\mediapipe\\efficientdet_lite0.tflite'
-    base_options = python.BaseOptions(model_asset_path=model_path)
-    options = vision.ObjectDetectorOptions(base_options=base_options,
-                                        score_threshold=0.2)
-    detector = vision.ObjectDetector.create_from_options(options)
+# def Show_object(file_path : str):
+"""Show a video with bounding boxes around detected person
+Args :
+    file_path : path to the RGB video that msut be computed
+"""
+# Open capture
 
-    while cap.isOpened():
-        ret, frame = cap.read()
+file_path = 'Enregistrements\\Videos_20230522_155825\\20230522_155825_Kinect_7.mkv'
+cap = cv2.VideoCapture(file_path)
+# Open model
+model_path = 'modeles\\mediapipe\\efficientdet_lite0.tflite'
+base_options = python.BaseOptions(model_asset_path=model_path)
+options = vision.ObjectDetectorOptions(base_options=base_options,
+                                    score_threshold=0.2)
+detector = vision.ObjectDetector.create_from_options(options)
 
-        if not ret:
-            break
+while cap.isOpened():
+    ret, frame = cap.read()
 
-        # 1. Save orginal frame
-        frame_base = frame
+    if not ret:
+        break
 
-        # 2 Use model detection on frame
-        frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
-        detection_result = detector.detect(frame)
+    # 1. Save orginal frame
+    frame_base = frame
 
-        # 3 display result
-        annotated_image = visualize(frame_base, detection_result)
-        rgb_annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
-        cv2.imshow("Image detection", rgb_annotated_image)
+    # 2 Use model detection on frame
+    frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+    detection_result = detector.detect(frame)
 
-        if cv2.waitKey(16) & 0xFF == ord('q'): # Lis la video à 60 fps
-            break
+    # 3 display result
+    annotated_image = visualize(frame_base, detection_result)
+    rgb_annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
+    cv2.imshow("Image detection", rgb_annotated_image)
 
-    cap.release()
-    cv2.destroyAllWindows()
+    if cv2.waitKey(16) & 0xFF == ord('q'): # Lis la video à 60 fps
+        break
+
+cap.release()
+cv2.destroyAllWindows()
 
 def Show_pose(file_path : str):
     # Open capture
