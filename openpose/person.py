@@ -254,6 +254,29 @@ class person(skeleton):
                     return i
         return -1
     
+    def get_idx_last_pred(keypoints, list_person) -> int:
+        """
+        Functions that determines if a person is in a list of person depending on the barycenter position 
+        on the previous frames
+        Args : 
+            keypoints : np.ndarray, openpose data output
+            list_person : np.ndarray, the list of person
+        Ret :
+            idx_last : int, index of the person in list_person_last or -1 if None is found
+        """
+        p = get_barycenter_from_keypoints(keypoints)
+        for i, person in enumerate(list_person):
+            # Verifies if the person already exists
+            if person == None :
+                continue
+            dist = point2D.get_dist(p, person.next_pose())
+            if (dist < TRACKING_RADIUS):
+                return i
+
+    def next_pose(self): # In progress, il faut calculer la position suivante du user en fonction des points précédents 
+        # et du nombre de is_lost.
+        pass
+
     def tracking(keypoints : np.ndarray, list_person : np.ndarray) -> 'person':
         """
         Function that update list_person with new openpose sample
@@ -311,3 +334,26 @@ def Show_list_person(frame, list_person):
         # Affichage des différents paramètres
         frame = cv2.addText(frame, str(list_person[i].is_tracked), (x, y), cv2.FONT_HERSHEY_PLAIN, config.FONT_SIZE, config.TEXT_COLOR, config.FONT_THICKNESS)
     return frame
+
+def get_barycenter_from_keypoints(keypoints : np.ndarray) -> 'point2D':
+        """
+        Calculate the position of a barycenter with openpose data output
+        Args :
+            keypoints : np.ndarray, openpose data output for a person
+        Ret : 
+            Barycenter : point2D : the barycenter of the person
+        """
+        card = 0.
+        rshoulder_x, rshoulder_y    = keypoints[2,:2]
+        lshoulder_x, lshoulder_y    = keypoints[5,:2]
+        rhip_x, rhip_y              = keypoints[9,:2]
+        lhip_x, lhip_y              = keypoints[12,:2]
+        if(rshoulder_x != None  and rshoulder_y != None):
+            card += 1
+        if(lshoulder_x != None  and lshoulder_y != None):
+            card += 1
+        if(rhip_x != None  and rhip_y != None):
+            card += 1
+        if(lhip_x != None  and lhip_y != None):
+            card += 1
+        return point2D((rshoulder_x+lshoulder_x+rhip_x+lhip_x)/card, (rshoulder_y+lshoulder_y+rhip_y+lhip_y)/card)
