@@ -61,3 +61,9 @@ def Show_pose_person(file_path : str):
     cap.release()
     cv2.destroyAllWindows()
     return
+
+def Show(frame):
+  mp_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+  detection_result = detector.detect(mp_frame)
+  frame = draw_landmarks_on_image(frame, detection_result)
+  return frame
