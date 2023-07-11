@@ -270,12 +270,42 @@ class person(skeleton):
             if person == None :
                 continue
             dist = point2D.get_dist(p, person.next_pose())
-            if (dist < TRACKING_RADIUS):
+            if (dist < TRACKING_RADIUS): # If a person is found, return the index
                 return i
+        return -1
 
-    def next_pose(self): # In progress, il faut calculer la position suivante du user en fonction des points précédents 
-        # et du nombre de is_lost.
-        pass
+    def next_pose(self): 
+        if (self.is_lost == 0): # Si la personne n'est pas perdue, on s'attend à se qu'elle soit autour de sa zone précédente
+            return self.barycenter()
+        else : # Si la personne est perdue, on projette pour essayer de la retrouver
+            if(self.history.shape[0] < 4):
+                b = self.get_barycenter_from_history(self.history.shape[0])
+                x, y = b.get_value()
+                x0, y0 = self.barycenter().get_value()
+                return point2D(x + (np.abs(x - x0)/self.history.shape[0])*self.is_lost, y + (np.abs(y - y0)/self.history.shape[0])*self.is_lost)
+            else:
+                b = self.get_barycenter_from_history(4)
+                x, y = b.get_value()
+                x0, y0 = self.barycenter()
+                return point2D(x + (np.abs(x - x0)/4)*self.is_lost, y + (np.abs(y - y0)/4)*self.is_lost)
+
+    def get_barycenter_from_history(self, index : int) -> 'point2D':
+        x0, y0 = self.history[index-1][2].get_value()
+        x1, y1 = self.history[index-1][5].get_value()
+        x2, y2 = self.history[index-1][9].get_value()
+        x3, y3 = self.history[index-1][12].get_value()
+        card = 4
+        if(x0 == 0 and y0 == 0):
+            card -= 1
+        if(x1 == 0 and y1 == 0):
+            card -= 1
+        if(x2 == 0 and y2 == 0):
+            card -= 1
+        if(x3 == 0 and y3 == 0):
+            card -= 1
+        res_x = (x0 + x1 + x2 + x3)/card
+        res_y = (y0 + y1 + y2 + y3)/card
+        return point2D(res_x, res_y)
 
     def tracking(keypoints : np.ndarray, list_person : np.ndarray) -> 'person':
         """
@@ -294,6 +324,23 @@ class person(skeleton):
             list_person[idx].update_from_array(keypoints)
             return list_person[idx]
         
+    def tracking_pred(keypoints : np.ndarray, list_person : np.ndarray) -> 'person':
+        """
+        Function that update list_person with new openpose sample with prediction of future movements
+        Args :
+            keypoints : np.ndarray, openpose output data
+            list_person : np.ndarray, list of person to be updated
+        Ret : 
+            person : 'person', new person or person with updated pose
+        """
+        idx = person.get_idx_last_pred(keypoints, list_person)
+        if(idx == -1) : # the person doesnt exist
+            list_person[person.nb_person-1] = person(keypoints)
+            return list_person[person.nb_person-1]
+        else: # the person already exists
+            list_person[idx].update_from_array(keypoints)
+            return list_person[idx]
+        
     def update(self) -> 'person':
         """
         Function that updates a person history
@@ -302,7 +349,8 @@ class person(skeleton):
             self.history = np.array([self.tab])
 
         elif((self.tab == self.history[0]).all()): # The person wasn't found
-            self.history = np.vstack((self.history[0], self.history))
+            # Si on veut garder la valeur dans l'historique meme lorsque la personne n'est pas détéctée, décommenter cette ligne 
+            # self.history = np.vstack((self.history[0], self.history))
             self.is_lost += 1
 
         else : # The person was found
