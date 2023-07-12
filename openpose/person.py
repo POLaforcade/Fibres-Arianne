@@ -359,6 +359,16 @@ class person(skeleton):
             self.is_tracked += 1
             self.is_lost = 0
 
+    def Show_traj(self, frame):
+        for i in range (self.history.shape[0]-1):
+            p0_x, p0_y = self.get_barycenter_from_history(i).get_value()
+            p0_x = int(p0_x)
+            p0_y = int(p0_y)
+            p1_x, p1_y = self.get_barycenter_from_history(i+1).get_value()
+            p1_x = int(p1_x)
+            p1_y = int(p1_y)
+            frame = cv2.line(frame, (p0_x, p0_y), (p1_x, p1_y), config.TEXT_COLOR, 3)
+        return frame
             
 def get_nb_person() -> None:
     """
@@ -405,3 +415,8 @@ def get_barycenter_from_keypoints(keypoints : np.ndarray) -> 'point2D':
         if(lhip_x != None  and lhip_y != None):
             card += 1
         return point2D((rshoulder_x+lshoulder_x+rhip_x+lhip_x)/card, (rshoulder_y+lshoulder_y+rhip_y+lhip_y)/card)
+
+def Show_trajectory(frame, list_person):
+    for Person in list_person:
+        frame = Person.Show_traj(frame)
+    return frame
