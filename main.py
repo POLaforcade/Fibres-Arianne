@@ -17,12 +17,6 @@ class VideoPlayer(QMainWindow):
         self.button_browse = QPushButton("Parcourir")
         self.button_browse.clicked.connect(self.browse_video)
 
-        # Création du bouton de pause
-        self.pause_button = QPushButton()
-        self.pause_button.setFixedSize(24, 24)
-        self.pause_button.setIcon(QIcon("pause_icon.png"))
-        self.pause_button.setStyleSheet("QPushButton { border: none; background: transparent; }")
-
         # Création de la barre de défilement
         self.scrollbar = QScrollBar(Qt.Horizontal)
         self.scrollbar.setStyleSheet(
@@ -105,6 +99,14 @@ class VideoPlayer(QMainWindow):
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
 
+        # Création du menu "Affichage"
+        Display_menu = self.menuBar().addMenu("Affichage")
+
+        # Création de l'action "Openpose"
+        openpose_action = QAction("Openpose",self)
+        openpose_action.triggered.connect(self.Show_openpose_data)
+        Display_menu.addAction(openpose_action)
+
     def browse_video(self):
         file_dialog = QFileDialog()
         video_file, _ = file_dialog.getOpenFileName(self, "Sélectionner une vidéo", "",
@@ -167,6 +169,9 @@ class VideoPlayer(QMainWindow):
 
         # Disable the "Fermer" button if no video is opened
         self.exit_action.setEnabled(False)
+
+    def Show_openpose_data(self): # to do, fonction qui affiche une vidéo openpose plutot que la vidéo du browther
+        pass
 
     def add_recent_file(self, file_path):
         # Charger les fichiers récents existants
