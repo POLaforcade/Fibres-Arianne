@@ -1,0 +1,28 @@
+video file title: YYYYMMDD_HHMMSS_Kinect_#Kinect.mkv
+analysis file title: OpenPose_AnaRes_YYYYMMDD_HHMMSS_Kinect_#Kinect.csv
+
+analyis file structure:
+#title corresponding videofile
+#(maybe) OpenPose wrapper model name, parameters, ...
+#frame, number bodies, body keypoints (3 x 25 x number bodies)
+0,0
+1,2,0.254685,0.654964,...
+
+
+with open(fname, "w") as f:
+    for frame_number, frame in enumerate(frames):
+        #....analysis
+        line = f"{frame_number},{n_bodies}"
+        for body in keypoints:
+            for x,y in body:
+                line += f",{x:.1f},{y:.1f},0"
+
+        f.write(line + "\n")
+
+###############
+
+f = open(fname, "a")
+
+...
+
+f.close()

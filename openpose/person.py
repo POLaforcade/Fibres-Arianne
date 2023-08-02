@@ -106,7 +106,7 @@ class skeleton:
         """
         if(keypoints.all() != None) : 
             self.tab = np.empty(26, dtype=point2D)
-            for i in range (26):
+            for i in range (25):
                 self.tab[i] = point2D(keypoints[i][0], keypoints[i][1])
 
     def barycenter(self) -> 'point2D':
@@ -233,22 +233,23 @@ class person(skeleton):
         Ret :
             idx_last : int, index of the person in list_person_last or -1 if None is found
         """
-        card = 0.
+        # card = 0.
         rshoulder_x, rshoulder_y    = keypoints[2,:2]
         lshoulder_x, lshoulder_y    = keypoints[5,:2]
         rhip_x, rhip_y              = keypoints[9,:2]
         lhip_x, lhip_y              = keypoints[12,:2]
-        if(rshoulder_x != None  and rshoulder_y != None):
-            card += 1
-        if(lshoulder_x != None  and lshoulder_y != None):
-            card += 1
-        if(rhip_x != None  and rhip_y != None):
-            card += 1
-        if(lhip_x != None  and lhip_y != None):
-            card += 1
-        c = point2D((rshoulder_x+lshoulder_x+rhip_x+lhip_x)/card, (rshoulder_y+lshoulder_y+rhip_y+lhip_y)/card)
+        # if(rshoulder_x != None  and rshoulder_y != None):
+        #     card += 1
+        # if(lshoulder_x != None  and lshoulder_y != None):
+        #     card += 1
+        # if(rhip_x != None  and rhip_y != None):
+        #     card += 1
+        # if(lhip_x != None  and lhip_y != None):
+        #     card += 1
+        c = point2D((rshoulder_x+lshoulder_x+rhip_x+lhip_x)/4, (rshoulder_y+lshoulder_y+rhip_y+lhip_y)/4)
         for i, person_last in enumerate(list_person) :
             if(person_last != None):
+                person_last.barycenter().Show()
                 dist = point2D.get_dist(c, person_last.barycenter())
                 if (dist < TRACKING_RADIUS):
                     return i
@@ -274,7 +275,7 @@ class person(skeleton):
                 return i
         return -1
 
-    def next_pose(self): 
+    def next_pose(self) -> 'point2D': 
         if (self.is_lost == 0): # Si la personne n'est pas perdue, on s'attend à se qu'elle soit autour de sa zone précédente
             return self.barycenter()
         else : # Si la personne est perdue, on projette pour essayer de la retrouver
@@ -286,7 +287,7 @@ class person(skeleton):
             else:
                 b = self.get_barycenter_from_history(4)
                 x, y = b.get_value()
-                x0, y0 = self.barycenter()
+                x0, y0 = self.barycenter().get_value()
                 return point2D(x + (np.abs(x - x0)/4)*self.is_lost, y + (np.abs(y - y0)/4)*self.is_lost)
 
     def get_barycenter_from_history(self, index : int) -> 'point2D':
@@ -359,16 +360,9 @@ class person(skeleton):
             self.is_tracked += 1
             self.is_lost = 0
 
-    def Show_traj(self, frame):
-        for i in range (self.history.shape[0]-1):
-            p0_x, p0_y = self.get_barycenter_from_history(i).get_value()
-            p0_x = int(p0_x)
-            p0_y = int(p0_y)
-            p1_x, p1_y = self.get_barycenter_from_history(i+1).get_value()
-            p1_x = int(p1_x)
-            p1_y = int(p1_y)
-            frame = cv2.line(frame, (p0_x, p0_y), (p1_x, p1_y), config.TEXT_COLOR, 3)
-        return frame
+        if self.is_lost > 4:
+            self == None
+
             
 def get_nb_person() -> None:
     """
@@ -387,10 +381,37 @@ def clear_first_column(tab : np.ndarray):
 
 def Show_list_person(frame, list_person):
     for i in range (config.NB_PERSON_MAX):
-        x, y = list_person[i].tab[0].get_value()
-        x, y = int(x), int(y)
-        # Affichage des différents paramètres
-        frame = cv2.addText(frame, str(list_person[i].is_tracked), (x, y), cv2.FONT_HERSHEY_PLAIN, config.FONT_SIZE, config.TEXT_COLOR, config.FONT_THICKNESS)
+        if list_person[i] == None :
+            continue
+        if(list_person[i].is_tracked > 4 and list_person[i].is_lost == 0):
+            x, y = list_person[i].tab[0].get_value()
+            x, y = int(x), int(y)
+            # Affichage des différents paramètres
+            frame = cv2.putText(frame, str(list_person[i].id), (x, y), cv2.FONT_HERSHEY_PLAIN, config.FONT_SIZE, config.TEXT_COLOR, config.FONT_THICKNESS)
+    return frame
+
+def Show_barycenter(frame, list_person):
+    for i in range (config.NB_PERSON_MAX):
+        if list_person[i] == None :
+            continue
+        if(list_person[i].is_tracked > 4 and list_person[i].is_lost == 0):
+            x, y = list_person[i].barycenter().get_value()
+            x = int(x)
+            y = int(y)
+            # Affichage des différents paramètres
+            frame = cv2.circle(frame, (x, y), 5, config.TEXT_COLOR, -1)
+    return frame
+
+def Show_tracking_radius(frame, list_person):
+    for i in range (config.NB_PERSON_MAX):
+        if list_person[i] == None :
+            continue
+        if(list_person[i].is_tracked > 4 and list_person[i].is_lost == 0):
+            x, y = list_person[i].barycenter().get_value()
+            x = int(x)
+            y = int(y)
+            # Affichage des différents paramètres
+            frame = cv2.circle(frame, (x, y), config.TRACKING_RADIUS, config.TEXT_COLOR, 2)
     return frame
 
 def get_barycenter_from_keypoints(keypoints : np.ndarray) -> 'point2D':
@@ -415,8 +436,3 @@ def get_barycenter_from_keypoints(keypoints : np.ndarray) -> 'point2D':
         if(lhip_x != None  and lhip_y != None):
             card += 1
         return point2D((rshoulder_x+lshoulder_x+rhip_x+lhip_x)/card, (rshoulder_y+lshoulder_y+rhip_y+lhip_y)/card)
-
-def Show_trajectory(frame, list_person):
-    for Person in list_person:
-        frame = Person.Show_traj(frame)
-    return frame
