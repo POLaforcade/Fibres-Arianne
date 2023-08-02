@@ -2,12 +2,39 @@ import sys, os
 import cv2
 import json
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPixmap, QImage, QIcon, QColor
-from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QPushButton, QFileDialog, QMainWindow, QAction, QMenu, QScrollBar
+from PyQt5.QtGui import QPixmap, QImage, QIcon, QColor, QFont
+from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QPushButton, QFileDialog, QMainWindow, QAction, QMenu, QScrollBar, QMessageBox
+
+import numpy as np
+from time import sleep
+from openpose import list_mouvement
+from openpose import config
+from openpose.person import person
+from openpose import person
+
+MARGIN = config.MARGIN
+ROW_SIZE = config.ROW_SIZE
+FONT_SIZE = config.FONT_SIZE
+FONT_THICKNESS = config.FONT_THICKNESS
+TEXT_COLOR = config.TEXT_COLOR
+FPS = config.FPS
+
+sys.path.append('F:/openpose/build/python/openpose/Release');
+os.environ['PATH']  = os.environ['PATH'] + ';' + 'F:/openpose/build/x64/Release;' +  'F:/openpose/build/bin;'
+import pyopenpose as op
 
 class VideoPlayer(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        # Création des variables pour le traitement des vidéos
+        self.pause = False
+        self.use_openpose = False
+        self.list_person = None
+        self.fps_wait = 40
+        self.time_s = 0
+        self.opWrapper = None
+        self.datum = None
 
         # Création du label pour afficher les images de la vidéo
         self.label_video = QLabel(self)
@@ -16,6 +43,13 @@ class VideoPlayer(QMainWindow):
         # Création du bouton "Parcourir"
         self.button_browse = QPushButton("Parcourir")
         self.button_browse.clicked.connect(self.browse_video)
+
+        # Create a QLabel widget for displaying "Les Fibres d'Ariann"
+        self.label_title = QLabel("Les Fibres d'Ariann", self)
+        self.label_title.setAlignment(Qt.AlignCenter)
+        font = QFont("Arial", 36, QFont.Bold)
+        self.label_title.setFont(font)
+        self.label_title.setStyleSheet("color: black;")
 
         # Création de la barre de défilement
         self.scrollbar = QScrollBar(Qt.Horizontal)
@@ -56,6 +90,10 @@ class VideoPlayer(QMainWindow):
         layout.addWidget(self.button_browse)
         layout.addWidget(self.scrollbar)
 
+        central_widget = QWidget(self)
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
         # Hide the scroll bar if no video is opened
         self.scrollbar.setVisible(False)
 
@@ -67,7 +105,10 @@ class VideoPlayer(QMainWindow):
         self.video_path = ""
         self.video_capture = None
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_video)
+        if(self.use_openpose == False):
+            self.timer.timeout.connect(self.update_video)
+        else :
+            self.timer.timeout.connect(self.update_video_openpose)
 
         # Création du menu "Fichier"
         file_menu = self.menuBar().addMenu("Fichier")
@@ -104,8 +145,21 @@ class VideoPlayer(QMainWindow):
 
         # Création de l'action "Openpose"
         openpose_action = QAction("Openpose",self)
-        openpose_action.triggered.connect(self.Show_openpose_data)
+        openpose_action.triggered.connect(self.setup_openpose)
         Display_menu.addAction(openpose_action)
+
+        # Création du menu "Lecteur"
+        lec_menu = self.menuBar().addMenu("Lecteur")
+
+        # Création de l'action "Lecture"
+        run_action = QAction("Lecture",self)
+        run_action.triggered.connect(self.run)
+        lec_menu.addAction(run_action)
+
+        # Création de l'action "Pause"
+        pause_action = QAction("Pause",self)
+        pause_action.triggered.connect(self.stop)
+        lec_menu.addAction(pause_action)
 
     def browse_video(self):
         file_dialog = QFileDialog()
@@ -120,6 +174,7 @@ class VideoPlayer(QMainWindow):
 
     def start_video(self):
         self.video_capture = cv2.VideoCapture(self.video_path)
+        print("Ouverture de la vidéo")
         self.timer.start(30)  # Set the video display update frequency
 
         # Retrieve the total duration of the video
@@ -139,25 +194,81 @@ class VideoPlayer(QMainWindow):
         # Enable the "Fermer" button if a video is opened
         self.exit_action.setEnabled(True)
 
+    def run(self):
+        self.pause = False
+
+    def stop(self):
+        self.pause = True
 
     def update_video(self):
-        ret, frame = self.video_capture.read()
-        if ret:
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            image = QImage(frame_rgb.data, frame_rgb.shape[1], frame_rgb.shape[0], QImage.Format_RGB888)
-            pixmap = QPixmap.fromImage(image)
-            self.label_video.setPixmap(pixmap.scaled(self.label_video.size(), Qt.AspectRatioMode.KeepAspectRatio))
+        if not self.pause :
+            ret, frame = self.video_capture.read()
+            if ret:
+                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    image = QImage(frame_rgb.data, frame_rgb.shape[1], frame_rgb.shape[0], QImage.Format_RGB888)
+                    pixmap = QPixmap.fromImage(image)
+                    self.label_video.setPixmap(pixmap.scaled(self.label_video.size(), Qt.AspectRatioMode.KeepAspectRatio))
 
-            # Get the current position in milliseconds
-            current_position = int(self.video_capture.get(cv2.CAP_PROP_POS_MSEC))
+                    # Get the current position in milliseconds
+                    current_position = int(self.video_capture.get(cv2.CAP_PROP_POS_MSEC))
 
-            # Set the scrollbar value
-            self.scrollbar.setValue(int(current_position))
-        else:
-            self.timer.stop()
-            self.video_capture.release()
+                    # Set the scrollbar value
+                    self.scrollbar.setValue(int(current_position))
+            else:
+                self.timer.stop()
+                self.video_capture.release()
+
+    def update_video_openpose(self) :
+        if not self.pause : 
+            ret, frame = self.video_capture.read()
+            if ret : 
+                self.time_s += 1/FPS
+            
+                self.list_person.fill(None)
+                self.datum.cvInputData = frame
+                self.opWrapper.emplaceAndPop([self.datum])
+
+                poseKeypoints = self.datum.poseKeypoints
+
+                if poseKeypoints.size > 1:
+                    for keypoints in poseKeypoints:
+                        person.person.tracking(keypoints, self.list_person)
+
+                for p in self.list_person :
+                    p.update()
+
+                frame = person.Show_list_person(frame, self.list_person)
+
+            else :
+                self.timer.stop()
+                self.video_capture.release()
 
     def exit_video(self):
+        if self.video_capture and self.video_capture.isOpened():
+            # Create a QMessageBox to ask the user whether to save the video
+            message_box = QMessageBox(self)
+            message_box.setWindowTitle("Enregistrer la vidéo")
+            message_box.setText("Enregistrer les données dans un fichier ?")
+            message_box.setIcon(QMessageBox.Question)
+            message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            message_box.setDefaultButton(QMessageBox.Yes)
+
+            # Connect the buttons to the appropriate actions
+            yes_button = message_box.button(QMessageBox.Yes)
+            yes_button.clicked.connect(self.save_and_exit)
+            no_button = message_box.button(QMessageBox.No)
+            no_button.clicked.connect(self.close_video)
+
+            message_box.exec_()
+        else:
+            self.close_video()
+
+    def save_and_exit(self):
+        # Code pour enregistrer les données openpose actuelles
+        print("Enregistrement des donnees")
+        self.close_video()
+
+    def close_video(self):
         self.timer.stop()
         self.video_capture.release()
         self.scrollbar.setVisible(False)
@@ -170,8 +281,17 @@ class VideoPlayer(QMainWindow):
         # Disable the "Fermer" button if no video is opened
         self.exit_action.setEnabled(False)
 
-    def Show_openpose_data(self): # to do, fonction qui affiche une vidéo openpose plutot que la vidéo du browther
-        pass
+    def setup_openpose(self): 
+        self.fps_wait        = 10
+        self.time_s          = 0
+        self.list_person = np.empty([100, 5], dtype=person.person)
+
+        self.opWrapper = op.WrapperPython()
+        self.opWrapper.configure(dict(model_folder="F:/openpose/models/"))
+        self.opWrapper.start()
+        self.datum = op.Datum()
+
+        self.use_openpose == True
 
     def add_recent_file(self, file_path):
         # Charger les fichiers récents existants

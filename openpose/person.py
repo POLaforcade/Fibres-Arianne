@@ -3,7 +3,7 @@ Created on Mon 12 2023
 @author : Laforcade
 """
 import numpy as np
-import config
+import openpose.config as config
 import random
 import cv2
 
