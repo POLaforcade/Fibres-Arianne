@@ -1,5 +1,5 @@
 TRACKING_RADIUS = 40 # pixels
-NB_PERSON_MAX = 100 # persons
+NB_PERSON_MAX = 1000 # persons
 MARGIN = 10  # pixels
 ROW_SIZE = 10  # pixels
 FONT_SIZE = 8

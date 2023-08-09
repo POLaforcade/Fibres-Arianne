@@ -3,7 +3,7 @@ Created on Mon 12 2023
 @author : Laforcade
 """
 import numpy as np
-import openpose.config as config
+import config
 import random
 import cv2
 
@@ -247,8 +247,11 @@ class person(skeleton):
         # if(lhip_x != None  and lhip_y != None):
         #     card += 1
         c = point2D((rshoulder_x+lshoulder_x+rhip_x+lhip_x)/4, (rshoulder_y+lshoulder_y+rhip_y+lhip_y)/4)
+        print("*********************************")
+        c.Show()
         for i, person_last in enumerate(list_person) :
             if(person_last != None):
+                print("--------------------------------------")
                 person_last.barycenter().Show()
                 dist = point2D.get_dist(c, person_last.barycenter())
                 if (dist < TRACKING_RADIUS):

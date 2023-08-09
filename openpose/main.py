@@ -4,7 +4,7 @@ import sys,os
 import list_mouvement
 import config
 from person import person
-import person
+import person as pe
 
 MARGIN = config.MARGIN
 ROW_SIZE = config.ROW_SIZE
@@ -21,7 +21,7 @@ import cv2
 use_open_pose   = True
 fps_wait        = 40
 time_s          = 0
-list_person = np.empty([100, 5], dtype='person')
+list_person = np.empty([config.NB_PERSON_MAX], dtype=person)
 
 if use_open_pose:
     opWrapper = op.WrapperPython()
@@ -44,7 +44,6 @@ while cap.isOpened():
         continue
 
     if use_open_pose:
-        list_person.fill(None)
         datum.cvInputData = frame
         opWrapper.emplaceAndPop([datum])
 
@@ -52,12 +51,16 @@ while cap.isOpened():
 
         if poseKeypoints.size > 1:
             for keypoints in poseKeypoints:
-                person.person.tracking(keypoints, list_person)
+                person.tracking_pred(keypoints, list_person)
 
-        for p in list_person :
-            p.update()
+        for Person in list_person:
+            if Person == None:
+                continue
+            Person.update()
 
-    frame = person.Show_list_person(frame, list_person)
+
+    frame = pe.Show_list_person(frame, list_person)
+    frame = pe.Show_tracking_radius(frame, list_person)
 
     if use_open_pose:
         cv2.imshow("output data", frame)
